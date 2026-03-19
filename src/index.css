@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 8%;
+    --foreground: 45 100% 85%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 45 100% 85%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 45 100% 85%;
+
+    --primary: 45 100% 60%;
+    --primary-foreground: 0 0% 8%;
+
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 45 100% 85%;
+
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 45 100% 60%;
+    --accent-foreground: 0 0% 8%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 16%;
+    --ring: 45 100% 60%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    min-height: 100vh;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #d4af37, #ffd700);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+}
+
+/* Gold gradient text */
+.gold-text {
+  background: linear-gradient(135deg, #d4af37, #ffd700, #ffed4e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gold border */
+.gold-border {
+  border: 1px solid #d4af37;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Premium card effect */
+.premium-card {
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(40, 40, 40, 0.9));
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* Gold button */
+.gold-button {
+  background: linear-gradient(135deg, #d4af37, #ffd700);
+  color: #0a0a0a;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.gold-button:hover {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+/* Luxury animations */
+@keyframes goldShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: goldShimmer 3s infinite;
+}

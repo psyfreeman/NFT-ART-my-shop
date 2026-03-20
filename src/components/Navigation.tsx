@@ -1,66 +1,63 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, MessageCircle, ShoppingCart } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSwitcher from './LanguageSwitcher';
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { items = [] } = useCart(); // Добавляем значение по умолчанию
+  const { items = [] } = useCart();
   const { t } = useLanguage();
 
   const navigation = [
-    { name: t('nav.home'), href: '/' },
-    { name: t('nav.catalog'), href: '/catalog' },
-    { name: t('nav.about'), href: '/about' },
-    { name: t('nav.contact'), href: '/contact' },
+    { name: t("nav.home"), href: "/" },
+    { name: t("nav.catalog"), href: "/catalog" },
+    { name: t("nav.about"), href: "/about" },
+    { name: t("nav.contact"), href: "/contact" },
   ];
 
-  const isActive = (href: string) => {
-    return location.pathname === href;
-  };
-
-  // Безопасное получение количества товаров
+  const isActive = (href: string) => location.pathname === href;
   const itemCount = Array.isArray(items) ? items.length : 0;
 
   return (
-    <nav className="premium-card sticky top-0 z-50 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <div className="h-12 w-12 rounded-full p-1 shadow-lg transition-transform duration-300 group-hover:scale-110">
-                <img 
-                  src="/assets/logo.png" 
-                  alt="Dima Sudarewskii" 
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <nav className="sticky top-0 z-50 border-b-2 border-lime-400 bg-[#0b0711] text-white shadow-[0_2px_0_0_rgba(132,204,22,0.15)]">
+      <div className="mx-auto max-w-7xl px-3 sm:px-4">
+        <div className="flex min-h-[74px] items-center justify-between gap-3 py-2">
+          <Link
+            to="/"
+            className="flex items-center gap-3 border-2 border-lime-500/40 bg-[#140c1d] px-3 py-2 hover:bg-[#1a1024]"
+          >
+            <div className="flex h-11 w-11 items-center justify-center border border-lime-500/30 bg-black">
+              <img
+                src="/assets/logo.png"
+                alt="Psyfreeman"
+                className="h-9 w-9 object-contain"
+              />
             </div>
-            <div className="flex flex-col justify-center">
-              <span className="text-xl font-bold gold-text group-hover:text-yellow-300 transition-colors duration-300 leading-tight">
-                Dima Sudarewskii
-              </span>
-              
+
+            <div className="leading-none">
+              <div className="text-sm font-bold uppercase tracking-[0.22em] text-lime-400">
+                Psyfreeman Φ
+              </div>
+              <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-gray-500">
+                collector art shop
+              </div>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden items-center gap-2 md:flex">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                className={`border px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] transition-none ${
                   isActive(item.href)
-                    ? 'text-yellow-400 bg-yellow-400/10 border border-yellow-400/30'
-                    : 'text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/5'
+                    ? "border-lime-400 bg-lime-400 text-black"
+                    : "border-[#3a2b52] bg-[#140c1d] text-lime-300 hover:border-lime-500/60 hover:bg-[#1a1024]"
                 }`}
               >
                 {item.name}
@@ -68,72 +65,69 @@ function Navigation() {
             ))}
           </div>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <LanguageSwitcher />
-            <Link to="/chat">
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10">
-                <MessageCircle className="h-5 w-5" />
-              </Button>
-            </Link>
+          <div className="hidden items-center gap-2 md:flex">
+            <div className="border border-[#3a2b52] bg-[#140c1d] px-2 py-1">
+              <LanguageSwitcher />
+            </div>
+
             <Link to="/cart">
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 relative">
+              <button className="relative flex h-11 min-w-[48px] items-center justify-center border border-lime-500/40 bg-[#140c1d] text-lime-300 hover:bg-[#1a1024]">
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-yellow-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  <span className="absolute -right-2 -top-2 min-w-[20px] border border-black bg-lime-400 px-1 text-center text-[10px] font-bold text-black">
                     {itemCount}
                   </span>
                 )}
-              </Button>
+              </button>
             </Link>
           </div>
 
-          {/* Mobile menu button */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-gray-300 hover:text-yellow-400">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="border border-lime-500/40 bg-[#140c1d] text-lime-300 hover:bg-[#1a1024] md:hidden"
+              >
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-gray-900 border-yellow-600/30">
-              <div className="flex flex-col space-y-4 mt-8">
+
+            <SheetContent
+              side="right"
+              className="w-[300px] border-l-2 border-lime-400 bg-[#0f0916] text-white sm:w-[340px]"
+            >
+              <div className="mt-8 flex flex-col gap-2">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                    className={`border px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] ${
                       isActive(item.href)
-                        ? 'text-yellow-400 bg-yellow-400/10 border border-yellow-400/30'
-                        : 'text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/5'
+                        ? "border-lime-400 bg-lime-400 text-black"
+                        : "border-[#3a2b52] bg-[#140c1d] text-lime-300 hover:border-lime-500/60 hover:bg-[#1a1024]"
                     }`}
                   >
                     {item.name}
                   </Link>
                 ))}
-                
-                <div className="border-t border-gray-700 pt-4 mt-4">
-                  <div className="flex items-center justify-between mb-4">
+
+                <div className="mt-4 border-t border-[#2d213f] pt-4">
+                  <div className="mb-4 border border-[#3a2b52] bg-[#140c1d] p-2">
                     <LanguageSwitcher />
                   </div>
-                  
-                  <Link to="/chat" onClick={() => setIsOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10">
-                      <MessageCircle className="h-5 w-5 mr-2" />
-                      {t('nav.chat')}
-                    </Button>
-                  </Link>
-                  
+
                   <Link to="/cart" onClick={() => setIsOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 relative">
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      {t('nav.cart')}
+                    <button className="flex w-full items-center border border-lime-500/40 bg-[#140c1d] px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-lime-300 hover:bg-[#1a1024]">
+                      <ShoppingCart className="mr-2 h-5 w-5" />
+                      {t("nav.cart")}
                       {itemCount > 0 && (
-                        <span className="ml-auto bg-yellow-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                        <span className="ml-auto min-w-[20px] border border-black bg-lime-400 px-1 text-center text-[10px] font-bold text-black">
                           {itemCount}
                         </span>
                       )}
-                    </Button>
+                    </button>
                   </Link>
                 </div>
               </div>

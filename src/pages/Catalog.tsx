@@ -1,438 +1,322 @@
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Navigation from '@/components/Navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SlidersHorizontal, Search, X } from 'lucide-react';
-import StrainCard from '@/components/StrainCard';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useSearchParams } from 'react-router-dom';
-import { strains } from '@/lib/mockData';
+import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import StrainCard from "@/components/StrainCard";
+import { strains } from "@/lib/mockData";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 function Catalog() {
   const { t } = useLanguage();
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState('all');
-  const [selectedFlowering, setSelectedFlowering] = useState('all');
-  const [selectedVariety, setSelectedVariety] = useState('all');
-  const [selectedTHC, setSelectedTHC] = useState('all');
-  const [selectedYield, setSelectedYield] = useState('all');
-  const [selectedEffects, setSelectedEffects] = useState<string[]>(
-    searchParams.get('effect') ? [searchParams.get('effect')!] : []
-  );
-  const [selectedFlavors, setSelectedFlavors] = useState<string[]>(
-    searchParams.get('flavor') ? [searchParams.get('flavor')!] : []
-  );
-  const [selectedTerpenes, setSelectedTerpenes] = useState<string[]>(
-    searchParams.get('terpene') ? [searchParams.get('terpene')!] : []
-  );
-  const [sortBy, setSortBy] = useState('name');
 
-  // Получаем все уникальные эффекты, вкусы и терпены
-  const allEffects = useMemo(() => {
-    const effects = new Set<string>();
-    strains.forEach(strain => {
-      strain.effects.forEach(effect => effects.add(effect));
-    });
-    return Array.from(effects).sort();
-  }, []);
-
-  const allFlavors = useMemo(() => {
-    const flavors = new Set<string>();
-    strains.forEach(strain => {
-      strain.flavors.forEach(flavor => flavors.add(flavor));
-    });
-    return Array.from(flavors).sort();
-  }, []);
-
-  const allTerpenes = useMemo(() => {
-    const terpenes = new Set<string>();
-    strains.forEach(strain => {
-      strain.terpenes?.forEach(terpene => terpenes.add(terpene));
-    });
-    return Array.from(terpenes).sort();
-  }, []);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [selectedAvailability, setSelectedAvailability] = useState("all");
+  const [selectedPriceRange, setSelectedPriceRange] = useState("all");
+  const [selectedStyle, setSelectedStyle] = useState("all");
+  const [selectedFormat, setSelectedFormat] = useState("all");
+  const [selectedSeries, setSelectedSeries] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
 
   const filteredStrains = useMemo(() => {
-    const filtered = strains.filter(strain => {
-      const matchesSearch = strain.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           strain.genetics.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           strain.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesType = selectedType === 'all' || strain.type.toLowerCase() === selectedType;
-      const matchesFlowering = selectedFlowering === 'all' || strain.floweringType.toLowerCase() === selectedFlowering;
-      const matchesVariety = selectedVariety === 'all' || strain.variety.toLowerCase() === selectedVariety;
-      
-      const thcValue = parseInt(strain.thc.replace('%', ''));
-      const matchesTHC = selectedTHC === 'all' ||
-                        (selectedTHC === 'low' && thcValue < 15) ||
-                        (selectedTHC === 'medium' && thcValue >= 15 && thcValue <= 25) ||
-                        (selectedTHC === 'high' && thcValue > 25);
-      
-      const yieldValue = parseInt(strain.yield.split('-')[1]?.replace('g/m²', '') || '0');
-      const matchesYield = selectedYield === 'all' ||
-                          (selectedYield === 'low' && yieldValue < 500) ||
-                          (selectedYield === 'medium' && yieldValue >= 500 && yieldValue <= 650) ||
-                          (selectedYield === 'high' && yieldValue > 650);
+    const filtered = strains.filter((strain) => {
+      const search = searchTerm.toLowerCase();
 
-      const matchesEffects = selectedEffects.length === 0 || 
-                            selectedEffects.some(effect => strain.effects.includes(effect));
-      const matchesFlavors = selectedFlavors.length === 0 || 
-                            selectedFlavors.some(flavor => strain.flavors.includes(flavor));
-      const matchesTerpenes = selectedTerpenes.length === 0 || 
-                             selectedTerpenes.some(terpene => strain.terpenes?.includes(terpene));
-      
-      return matchesSearch && matchesType && matchesFlowering && matchesVariety && 
-             matchesTHC && matchesYield && matchesEffects && matchesFlavors && matchesTerpenes;
+      const matchesSearch =
+        strain.name.toLowerCase().includes(search) ||
+        strain.description.toLowerCase().includes(search) ||
+        (strain.series || "").toLowerCase().includes(search) ||
+        (strain.style || "").toLowerCase().includes(search) ||
+        (strain.format || "").toLowerCase().includes(search);
+
+      const matchesAvailability =
+        selectedAvailability === "all" ||
+        (strain.status || "").toLowerCase() === selectedAvailability;
+
+      const matchesStyle =
+        selectedStyle === "all" ||
+        (strain.style || "").toLowerCase() === selectedStyle;
+
+      const matchesFormat =
+        selectedFormat === "all" ||
+        (strain.format || "").toLowerCase() === selectedFormat;
+
+      const matchesSeries =
+        selectedSeries === "all" ||
+        (strain.series || "").toLowerCase() === selectedSeries;
+
+      const price = Number(String(strain.price).replace(/[^0-9.]/g, "")) || 0;
+
+      const matchesPriceRange =
+        selectedPriceRange === "all" ||
+        (selectedPriceRange === "low" && price < 200) ||
+        (selectedPriceRange === "medium" && price >= 200 && price <= 500) ||
+        (selectedPriceRange === "high" && price > 500);
+
+      return (
+        matchesSearch &&
+        matchesAvailability &&
+        matchesPriceRange &&
+        matchesStyle &&
+        matchesFormat &&
+        matchesSeries
+      );
     });
 
-    // Сортировка
     filtered.sort((a, b) => {
+      const priceA = Number(String(a.price).replace(/[^0-9.]/g, "")) || 0;
+      const priceB = Number(String(b.price).replace(/[^0-9.]/g, "")) || 0;
+
       switch (sortBy) {
-        case 'date':
+        case "date":
           return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-        case 'price':
-          return parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', ''));
-        case 'thc':
-          return parseInt(b.thc.replace('%', '')) - parseInt(a.thc.replace('%', ''));
+        case "price":
+          return priceA - priceB;
         default:
           return a.name.localeCompare(b.name);
       }
     });
 
     return filtered;
-  }, [searchTerm, selectedType, selectedFlowering, selectedVariety, selectedTHC, selectedYield, selectedEffects, selectedFlavors, selectedTerpenes, sortBy]);
+  }, [
+    searchTerm,
+    selectedAvailability,
+    selectedPriceRange,
+    selectedStyle,
+    selectedFormat,
+    selectedSeries,
+    sortBy,
+  ]);
 
   const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedType('all');
-    setSelectedFlowering('all');
-    setSelectedVariety('all');
-    setSelectedTHC('all');
-    setSelectedYield('all');
-    setSelectedEffects([]);
-    setSelectedFlavors([]);
-    setSelectedTerpenes([]);
-    setSortBy('name');
+    setSearchTerm("");
+    setSelectedAvailability("all");
+    setSelectedPriceRange("all");
+    setSelectedStyle("all");
+    setSelectedFormat("all");
+    setSelectedSeries("all");
+    setSortBy("name");
     setSearchParams({});
   };
 
-  const removeEffectFilter = (effect: string) => {
-    const newEffects = selectedEffects.filter(e => e !== effect);
-    setSelectedEffects(newEffects);
-    const newParams = new URLSearchParams(searchParams);
-    if (newEffects.length === 0) {
-      newParams.delete('effect');
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+
+    if (value.trim()) {
+      setSearchParams({ search: value });
     } else {
-      newParams.set('effect', newEffects[0]);
-    }
-    setSearchParams(newParams);
-  };
-
-  const removeFlavorFilter = (flavor: string) => {
-    const newFlavors = selectedFlavors.filter(f => f !== flavor);
-    setSelectedFlavors(newFlavors);
-    const newParams = new URLSearchParams(searchParams);
-    if (newFlavors.length === 0) {
-      newParams.delete('flavor');
-    } else {
-      newParams.set('flavor', newFlavors[0]);
-    }
-    setSearchParams(newParams);
-  };
-
-  const removeTerpeneFilter = (terpene: string) => {
-    const newTerpenes = selectedTerpenes.filter(t => t !== terpene);
-    setSelectedTerpenes(newTerpenes);
-    const newParams = new URLSearchParams(searchParams);
-    if (newTerpenes.length === 0) {
-      newParams.delete('terpene');
-    } else {
-      newParams.set('terpene', newTerpenes[0]);
-    }
-    setSearchParams(newParams);
-  };
-
-  // Функции для установки фильтров при клике на теги
-  const handleEffectClick = (effect: string) => {
-    if (!selectedEffects.includes(effect)) {
-      const newEffects = [...selectedEffects, effect];
-      setSelectedEffects(newEffects);
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set('effect', effect);
-      setSearchParams(newParams);
-    }
-  };
-
-  const handleFlavorClick = (flavor: string) => {
-    if (!selectedFlavors.includes(flavor)) {
-      const newFlavors = [...selectedFlavors, flavor];
-      setSelectedFlavors(newFlavors);
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set('flavor', flavor);
-      setSearchParams(newParams);
-    }
-  };
-
-  const handleTerpeneClick = (terpene: string) => {
-    if (!selectedTerpenes.includes(terpene)) {
-      const newTerpenes = [...selectedTerpenes, terpene];
-      setSelectedTerpenes(newTerpenes);
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set('terpene', terpene);
-      setSearchParams(newParams);
+      setSearchParams({});
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+    <div className="min-h-screen bg-[#09050d] text-white">
       <Navigation />
-      
-      {/* Hero секция */}
-      <div className="premium-card mx-4 mt-8 mb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-6">
-              <span className="text-white">{t('catalog.title')}</span>
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              {t('catalog.subtitle')}
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Фильтры */}
-          <div className="lg:col-span-1">
-            <Card className="premium-card sticky top-8">
+      <section className="border-b border-lime-500/10 bg-gradient-to-b from-[#120916] to-[#09050d]">
+        <div className="mx-auto max-w-7xl px-4 py-16">
+          <div className="mb-4 inline-flex rounded-full border border-lime-500/20 bg-black/30 px-3 py-1 text-xs uppercase tracking-[0.25em] text-lime-400">
+            Fresh Drop
+          </div>
+
+          <h1 className="mb-4 text-4xl font-bold uppercase tracking-wide md:text-6xl">
+            {t("catalog.title")}
+          </h1>
+
+          <p className="max-w-2xl text-base leading-7 text-gray-400 md:text-lg">
+            {t("catalog.subtitle")}
+          </p>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl px-4 py-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
+          <aside>
+            <Card className="sticky top-24 border border-lime-500/20 bg-[#120916] text-white">
               <CardHeader>
-                <CardTitle className="gold-text flex items-center gap-2">
-                  <SlidersHorizontal className="h-5 w-5" />
-                  {t('catalog.filters')}
+                <CardTitle className="flex items-center gap-2 text-lime-300">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  {t("catalog.filters")}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Поиск */}
+
+              <CardContent className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-2">
-                    {t('catalog.search')}
+                  <label className="mb-2 block text-sm font-medium text-lime-300">
+                    Search
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                     <Input
-                      placeholder={t('catalog.search.placeholder')}
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 bg-gray-900 border-yellow-600/30 text-white placeholder-gray-400 focus:border-yellow-500"
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      placeholder={t("catalog.searchPlaceholder")}
+                      className="border-lime-500/20 bg-black/30 pl-10 text-white placeholder:text-gray-500"
                     />
                   </div>
                 </div>
 
-                {/* Активные фильтры */}
-                {(selectedEffects.length > 0 || selectedFlavors.length > 0 || selectedTerpenes.length > 0) && (
-                  <div>
-                    <label className="block text-sm font-medium text-yellow-400 mb-2">
-                      {t('catalog.active.filters')}
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedEffects.map((effect) => (
-                        <Badge key={effect} className="bg-yellow-600/20 text-yellow-300 border-yellow-600/50">
-                          {t('catalog.filter.effect')}: {t(`${effect}`)}
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => removeEffectFilter(effect)}
-                            className="ml-1 h-4 w-4 p-0 hover:bg-transparent"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </Badge>
-                      ))}
-                      {selectedFlavors.map((flavor) => (
-                        <Badge key={flavor} className="bg-green-600/20 text-green-300 border-green-600/50">
-                          {t('catalog.filter.flavor')}: {t(`${flavor}`)}
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => removeFlavorFilter(flavor)}
-                            className="ml-1 h-4 w-4 p-0 hover:bg-transparent"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </Badge>
-                      ))}
-                      {selectedTerpenes.map((terpene) => (
-                        <Badge key={terpene} className="bg-blue-600/20 text-blue-300 border-blue-600/50">
-                          {t('catalog.filter.terpene')}: {t(`${terpene}`)}
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => removeTerpeneFilter(terpene)}
-                            className="ml-1 h-4 w-4 p-0 hover:bg-transparent"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Тип сорта */}
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-2">
-                    {t('catalog.type')}
+                  <label className="mb-2 block text-sm font-medium text-lime-300">
+                    Available
                   </label>
-                  <Select value={selectedType} onValueChange={setSelectedType}>
-                    <SelectTrigger className="bg-gray-900 border-yellow-600/30 text-white">
+                  <Select
+                    value={selectedAvailability}
+                    onValueChange={setSelectedAvailability}
+                  >
+                    <SelectTrigger className="border-lime-500/20 bg-black/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-yellow-600/30">
-                      <SelectItem value="all">{t('catalog.type.all')}</SelectItem>
-                      <SelectItem value="indica">{t('catalog.type.indica')}</SelectItem>
-                      <SelectItem value="sativa">{t('catalog.type.sativa')}</SelectItem>
-                      <SelectItem value="hybrid">{t('catalog.type.hybrid')}</SelectItem>
+                    <SelectContent className="border-lime-500/20 bg-[#120916] text-white">
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="reserved">Reserved</SelectItem>
+                      <SelectItem value="collected">Collected</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                {/* Тип цветения */}
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-2">
-                    {t('catalog.flowering')}
+                  <label className="mb-2 block text-sm font-medium text-lime-300">
+                    Price range
                   </label>
-                  <Select value={selectedFlowering} onValueChange={setSelectedFlowering}>
-                    <SelectTrigger className="bg-gray-900 border-yellow-600/30 text-white">
+                  <Select
+                    value={selectedPriceRange}
+                    onValueChange={setSelectedPriceRange}
+                  >
+                    <SelectTrigger className="border-lime-500/20 bg-black/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-yellow-600/30">
-                      <SelectItem value="all">{t('catalog.flowering.all')}</SelectItem>
-                      <SelectItem value="photoperiod">{t('catalog.flowering.photo')}</SelectItem>
-                      <SelectItem value="autoflower">{t('catalog.flowering.auto')}</SelectItem>
-                      <SelectItem value="early">{t('catalog.flowering.early')}</SelectItem>
+                    <SelectContent className="border-lime-500/20 bg-[#120916] text-white">
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="low">Under $200</SelectItem>
+                      <SelectItem value="medium">$200 – $500</SelectItem>
+                      <SelectItem value="high">Over $500</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                {/* Разновидность */}
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-2">
-                    {t('catalog.variety')}
+                  <label className="mb-2 block text-sm font-medium text-lime-300">
+                    Style
                   </label>
-                  <Select value={selectedVariety} onValueChange={setSelectedVariety}>
-                    <SelectTrigger className="bg-gray-900 border-yellow-600/30 text-white">
+                  <Select value={selectedStyle} onValueChange={setSelectedStyle}>
+                    <SelectTrigger className="border-lime-500/20 bg-black/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-yellow-600/30">
-                      <SelectItem value="all">{t('catalog.variety.all')}</SelectItem>
-                      <SelectItem value="feminized">{t('catalog.variety.feminized')}</SelectItem>
-                      <SelectItem value="regular">{t('catalog.variety.regular')}</SelectItem>
+                    <SelectContent className="border-lime-500/20 bg-[#120916] text-white">
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="street art">Street Art</SelectItem>
+                      <SelectItem value="tachisme">Tachisme</SelectItem>
+                      <SelectItem value="abstraction">Abstraction</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                {/* THC уровень */}
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-2">
-                    {t('catalog.thc')}
+                  <label className="mb-2 block text-sm font-medium text-lime-300">
+                    Format
                   </label>
-                  <Select value={selectedTHC} onValueChange={setSelectedTHC}>
-                    <SelectTrigger className="bg-gray-900 border-yellow-600/30 text-white">
+                  <Select value={selectedFormat} onValueChange={setSelectedFormat}>
+                    <SelectTrigger className="border-lime-500/20 bg-black/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-yellow-600/30">
-                      <SelectItem value="all">{t('catalog.thc.all')}</SelectItem>
-                      <SelectItem value="low">{t('catalog.thc.low')}</SelectItem>
-                      <SelectItem value="medium">{t('catalog.thc.medium')}</SelectItem>
-                      <SelectItem value="high">{t('catalog.thc.high')}</SelectItem>
+                    <SelectContent className="border-lime-500/20 bg-[#120916] text-white">
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="physical">Physical</SelectItem>
+                      <SelectItem value="nft">NFT</SelectItem>
+                      <SelectItem value="phygital">Phygital</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                {/* Урожайность */}
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-2">
-                    {t('catalog.yield')}
+                  <label className="mb-2 block text-sm font-medium text-lime-300">
+                    Series
                   </label>
-                  <Select value={selectedYield} onValueChange={setSelectedYield}>
-                    <SelectTrigger className="bg-gray-900 border-yellow-600/30 text-white">
+                  <Select value={selectedSeries} onValueChange={setSelectedSeries}>
+                    <SelectTrigger className="border-lime-500/20 bg-black/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-yellow-600/30">
-                      <SelectItem value="all">{t('catalog.yield.all')}</SelectItem>
-                      <SelectItem value="low">{t('catalog.yield.low')}</SelectItem>
-                      <SelectItem value="medium">{t('catalog.yield.medium')}</SelectItem>
-                      <SelectItem value="high">{t('catalog.yield.high')}</SelectItem>
+                    <SelectContent className="border-lime-500/20 bg-[#120916] text-white">
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="smile canon">Smile Canon</SelectItem>
+                      <SelectItem value="fresh drop">Fresh Drop</SelectItem>
+                      <SelectItem value="genesis mint">Genesis Mint</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <Button 
-                  onClick={clearFilters} 
-                  variant="outline" 
-                  className="w-full border-yellow-600/30 text-yellow-400 hover:bg-yellow-400/10"
+                <Button
+                  onClick={clearFilters}
+                  variant="outline"
+                  className="w-full border-lime-500/30 bg-transparent text-lime-300 hover:bg-lime-500/10 hover:text-lime-200"
                 >
-                  {t('catalog.clear.filters')}
+                  {t("catalog.clearFilters")}
                 </Button>
               </CardContent>
             </Card>
-          </div>
+          </aside>
 
-          {/* Результаты */}
-          <div className="lg:col-span-3">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-              <div>
-                <p className="text-gray-300">
-                  {t('catalog.found')} <span className="font-bold text-yellow-400">{filteredStrains.length}</span> {t('catalog.strains')}
-                </p>
+          <main>
+            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="text-sm text-gray-400">
+                {t("catalog.results")}{" "}
+                <span className="font-semibold text-lime-400">
+                  {filteredStrains.length}
+                </span>
               </div>
-              
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-400 text-sm">{t('catalog.sort')}:</span>
+
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-400">{t("catalog.sort")}</span>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40 bg-gray-900 border-yellow-600/30 text-white">
+                  <SelectTrigger className="w-40 border-lime-500/20 bg-black/30 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-yellow-600/30">
-                    <SelectItem value="name">{t('catalog.sort.name')}</SelectItem>
-                    <SelectItem value="date">{t('catalog.sort.date')}</SelectItem>
-                    <SelectItem value="price">{t('catalog.sort.price')}</SelectItem>
-                    <SelectItem value="thc">{t('catalog.sort.thc')}</SelectItem>
+                  <SelectContent className="border-lime-500/20 bg-[#120916] text-white">
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="date">Newest</SelectItem>
+                    <SelectItem value="price">Price</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             {filteredStrains.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {filteredStrains.map((strain) => (
-                  <StrainCard 
-                    key={strain.id} 
-                    strain={strain}
-                    onEffectClick={handleEffectClick}
-                    onFlavorClick={handleFlavorClick}
-                    onTerpeneClick={handleTerpeneClick}
-                  />
+                  <StrainCard key={strain.id} strain={strain} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-2xl font-bold text-white mb-2">{t('catalog.no.results')}</h3>
-                <p className="text-gray-400 mb-6">{t('catalog.no.results.desc')}</p>
-                <Button onClick={clearFilters} className="gold-button">
-                  {t('catalog.clear.filters')}
-                </Button>
-              </div>
+              <Card className="border border-lime-500/20 bg-[#120916] text-white">
+                <CardContent className="py-16 text-center">
+                  <h3 className="mb-2 text-2xl font-bold text-white">
+                    {t("catalog.empty")}
+                  </h3>
+                  <p className="mb-6 text-gray-400">
+                    Try changing the filters or search phrase.
+                  </p>
+                  <Button
+                    onClick={clearFilters}
+                    className="bg-lime-400 text-black hover:bg-lime-300"
+                  >
+                    {t("catalog.clearFilters")}
+                  </Button>
+                </CardContent>
+              </Card>
             )}
-          </div>
+          </main>
         </div>
       </div>
     </div>

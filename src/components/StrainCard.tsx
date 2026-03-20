@@ -1,284 +1,164 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Star, Leaf, Droplets, Dna } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
-import { translateFloweringTime } from '@/lib/mockData';
-import type { Strain } from '@/lib/mockData';
+import React from "react";
+import { Link } from "react-router-dom";
+import { ShoppingCart, Star } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/hooks/use-toast";
+
+interface Strain {
+  id: string;
+  slug?: string;
+  name: string;
+  image: string;
+  price: string | number;
+  description: string;
+  featured?: boolean;
+  series?: string;
+  format?: string;
+  style?: string;
+  status?: string;
+}
 
 interface StrainCardProps {
   strain: Strain;
-  onEffectClick?: (effect: string) => void;
-  onFlavorClick?: (flavor: string) => void;
-  onTerpeneClick?: (terpene: string) => void;
 }
 
-const StrainCard: React.FC<StrainCardProps> = ({ 
-  strain, 
-  onEffectClick, 
-  onFlavorClick, 
-  onTerpeneClick 
-}) => {
+const StrainCard: React.FC<StrainCardProps> = ({ strain }) => {
   const { addToCart } = useCart();
-  const { t, language } = useLanguage();
-  const navigate = useNavigate();
-  const [isAdding, setIsAdding] = useState(false);
+  const { toast } = useToast();
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsAdding(true);
-    try {
-      await addToCart({
-        id: strain.id,
-        name: strain.name,
-        price: parseFloat(strain.price.replace('$', '')),
-        image: strain.image,
-        type: strain.type,
-        thc: strain.thc
-      });
-      
-      toast.success(`${strain.name} ${t('strain.added.cart')}`);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast.error('Ошибка при добавлении в корзину');
-    } finally {
-      setIsAdding(false);
-    }
-  };
+  const handleAddToCart = () => {
+    addToCart(strain);
 
-  const handleCardClick = () => {
-    navigate(`/strain/${strain.id}`);
-  };
-
-  const handleTagClick = (e: React.MouseEvent, callback?: (value: string) => void, value?: string) => {
-    e.stopPropagation();
-    if (callback && value) {
-      callback(value);
-    }
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Легкий': return 'text-green-300 border-green-500/50 bg-green-500/80';
-      case 'Средний': return 'text-yellow-300 border-yellow-500/50 bg-yellow-500/80';
-      case 'Сложный': return 'text-red-300 border-red-500/50 bg-red-500/80';
-      default: return 'text-gray-300 border-gray-500/50 bg-gray-500/80';
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Indica': return 'text-purple-300 border-purple-500/50 bg-purple-500/80';
-      case 'Sativa': return 'text-orange-300 border-orange-500/50 bg-orange-500/80';
-      case 'Hybrid': return 'text-blue-300 border-blue-500/50 bg-blue-500/80';
-      default: return 'text-gray-300 border-gray-500/50 bg-gray-500/80';
-    }
-  };
-
-  const getFloweringTypeColor = (floweringType: string) => {
-    switch (floweringType) {
-      case 'Photoperiod': return 'text-yellow-300 border-yellow-500/50 bg-yellow-500/100';
-      case 'Autoflower': return 'text-green-300 border-green-500/50 bg-green-500/100';
-      case 'Early': return 'text-orange-300 border-orange-500/50 bg-orange-500/100';
-      default: return 'text-gray-300 border-gray-500/50 bg-gray-500/100';
-    }
-  };
-
-  const getVarietyColor = (variety: string) => {
-    switch (variety) {
-      case 'Feminized': return 'text-pink-300 border-pink-500/50 bg-pink-500/100';
-      case 'Regular': return 'text-cyan-300 border-cyan-500/50 bg-cyan-500/100';
-      default: return 'text-gray-300 border-gray-500/50 bg-gray-500/100';
-    }
+    toast({
+      title: "Added to cart",
+      description: `${strain.name} has been added to your collector cart.`,
+    });
   };
 
   return (
-    <Card 
-      className="premium-card group hover:scale-105 transition-all duration-300 overflow-hidden cursor-pointer"
-      onClick={handleCardClick}
-    >
-      <CardHeader className="p-0 relative">
-        <div className="relative overflow-hidden rounded-t-lg">
-          <img 
-            src={strain.image} 
-            alt={strain.name}
-            className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-300"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-          
-          {/* Значки в углах */}
-          <div className="absolute top-3 left-3 flex gap-2">
-            {strain.featured && (
-              <Badge className="bg-green-600/90 text-yellow-100 border-yellow-500/50">
-                <Star className="w-3 h-3 mr-1" />
-                Featured
-              </Badge>
-            )}
-            <Badge className={`${getTypeColor(strain.type)}`}>
-              {strain.type}
+    <Card className="group overflow-hidden border border-lime-500/20 bg-[#120916] text-white shadow-[0_0_0_1px_rgba(163,230,53,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-lime-400/50 hover:shadow-[0_0_24px_rgba(132,204,22,0.18)]">
+      <div className="relative overflow-hidden">
+        <img
+          src={strain.image}
+          alt={strain.name}
+          className="h-72 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+
+        <div className="absolute left-3 top-3 flex gap-2">
+          {strain.featured && (
+            <Badge className="border border-black/30 bg-lime-400 text-black">
+              <Star className="mr-1 h-3 w-3" />
+              NEW
+            </Badge>
+          )}
+
+          {strain.status && (
+            <Badge className="border border-lime-500/30 bg-black/75 text-lime-400">
+              {strain.status}
+            </Badge>
+          )}
+        </div>
+
+        {strain.format && (
+          <div className="absolute right-3 top-3">
+            <Badge className="border border-lime-500/20 bg-[#1a1024]/90 text-lime-300">
+              {strain.format}
             </Badge>
           </div>
-          
-          <div className="absolute top-3 right-3">
-            <Badge className={`${getFloweringTypeColor(strain.floweringType)}`}>
-              {strain.floweringType === 'Photoperiod' ? t('catalog.flowering.photo') :
-               strain.floweringType === 'Autoflower' ? t('catalog.flowering.auto') :
-               t('catalog.flowering.early')}
-            </Badge>
-          </div>
+        )}
 
-          <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
-            <div>
-              <h3 className="text-xl font-bold text-white mb-1 drop-shadow-lg">{strain.name}</h3>
-              <div className="flex gap-2">
-                <Badge className={`${getDifficultyColor(strain.difficulty)} text-xs`}>
-                  {t(`strain.difficulty.${strain.difficulty.toLowerCase()}`)}
-                </Badge>
-                <Badge className={`${getVarietyColor(strain.variety)} text-xs`}>
-                  {strain.variety === 'Feminized' ? t('catalog.variety.feminized') : t('catalog.variety.regular')}
-                </Badge>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-yellow-400 drop-shadow-lg">{strain.price}</div>
-            </div>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="p-4 space-y-4">
-        {/* Основная информация */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-400">{t('strain.thc')}:</span>
-              <span className="text-green-400 font-medium">{strain.thc}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">{t('strain.cbd')}:</span>
-              <span className="text-blue-400 font-medium">{strain.cbd}</span>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-400">{t('strain.flowering.time')}:</span>
-              <span className="text-purple-400 font-medium text-xs">{translateFloweringTime(strain.floweringTime, language)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">{t('strain.yield')}:</span>
-              <span className="text-orange-400 font-medium text-xs">{strain.yield}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Генетик а */}
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Dna className="w-4 h-4 text-yellow-400" />
-            <span className="text-sm font-medium text-yellow-400">{t('strain.genetics')}:</span>
-          </div>
-          <p className="text-xs text-gray-300 leading-relaxed">{strain.genetics}</p>
-        </div>
-
-        {/* Эффекты */}
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Leaf className="w-4 h-4 text-green-400" />
-            <span className="text-sm font-medium text-green-400">{t('strain.effects')}:</span>
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {strain.effects.slice(0, 3).map((effect, index) => (
-              <Badge 
-                key={index} 
-                className="text-xs border-green-500/50 text-green-300 bg-green-500/20 cursor-pointer hover:bg-green-400/30 transition-colors"
-                onClick={(e) => handleTagClick(e, onEffectClick, effect)}
-              >
-                {t(`effect.${effect}`)}
-              </Badge>
-            ))}
-            {strain.effects.length > 3 && (
-              <Badge className="text-xs border-gray-500/50 text-gray-300 bg-gray-500/20">
-                +{strain.effects.length - 3}
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        {/* Вкусы */}
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Droplets className="w-4 h-4 text-blue-400" />
-            <span className="text-sm font-medium text-blue-400">{t('strain.flavors')}:</span>
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {strain.flavors.map((flavor, index) => (
-              <Badge 
-                key={index} 
-                className="text-xs border-blue-500/50 text-blue-300 bg-blue-500/20 cursor-pointer hover:bg-blue-400/30 transition-colors"
-                onClick={(e) => handleTagClick(e, onFlavorClick, flavor)}
-              >
-                {t(`flavor.${flavor}`)}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        {/* Терпены */}
-        {strain.terpenes && strain.terpenes.length > 0 && (
+        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-4 h-4 rounded-full bg-purple-400/20 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-purple-400" />
-              </div>
-              <span className="text-sm font-medium text-purple-400">{t('strain.terpenes')}:</span>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {strain.terpenes.slice(0, 3).map((terpene, index) => (
-                <Badge 
-                  key={index} 
-                  className="text-xs border-purple-500/50 text-purple-300 bg-purple-500/20 cursor-pointer hover:bg-purple-400/30 transition-colors"
-                  onClick={(e) => handleTagClick(e, onTerpeneClick, terpene)}
-                >
-                  {t(`terpene.${terpene}`)}
+            <h3 className="mb-2 text-xl font-bold uppercase tracking-wide text-white drop-shadow-lg">
+              {strain.name}
+            </h3>
+
+            <div className="flex flex-wrap gap-2">
+              {strain.series && (
+                <Badge className="border border-lime-500/30 bg-black/70 text-lime-400">
+                  {strain.series}
                 </Badge>
-              ))}
-              {strain.terpenes.length > 3 && (
-                <Badge className="text-xs border-gray-500/50 text-gray-300 bg-gray-500/20">
-                  +{strain.terpenes.length - 3}
+              )}
+
+              {strain.style && (
+                <Badge className="border border-fuchsia-500/30 bg-black/70 text-fuchsia-300">
+                  {strain.style}
                 </Badge>
               )}
             </div>
           </div>
-        )}
 
-        {/* Описание */}
-        <p className="text-sm text-gray-400 leading-relaxed line-clamp-2">
-          
+          <div className="text-right">
+            <div className="text-2xl font-bold text-lime-400 drop-shadow-lg">
+              {strain.price}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CardContent className="space-y-4 p-5">
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="rounded-md border border-lime-500/15 bg-black/20 p-3">
+            <div className="text-xs uppercase tracking-wider text-gray-500">
+              Series
+            </div>
+            <div className="mt-1 font-medium text-lime-300">
+              {strain.series || "Unknown"}
+            </div>
+          </div>
+
+          <div className="rounded-md border border-lime-500/15 bg-black/20 p-3">
+            <div className="text-xs uppercase tracking-wider text-gray-500">
+              Format
+            </div>
+            <div className="mt-1 font-medium text-purple-300">
+              {strain.format || "Art"}
+            </div>
+          </div>
+
+          <div className="rounded-md border border-lime-500/15 bg-black/20 p-3">
+            <div className="text-xs uppercase tracking-wider text-gray-500">
+              Style
+            </div>
+            <div className="mt-1 font-medium text-lime-200">
+              {strain.style || "Mixed"}
+            </div>
+          </div>
+
+          <div className="rounded-md border border-lime-500/15 bg-black/20 p-3">
+            <div className="text-xs uppercase tracking-wider text-gray-500">
+              Status
+            </div>
+            <div className="mt-1 font-medium text-yellow-300">
+              {strain.status || "Available"}
+            </div>
+          </div>
+        </div>
+
+        <p className="line-clamp-3 text-sm leading-relaxed text-gray-400">
+          {strain.description}
         </p>
 
-        {/* Кнопки действий */}
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-3 pt-2">
+          <Button
+            asChild
+            variant="outline"
+            className="flex-1 border-lime-500/40 bg-transparent text-lime-300 hover:bg-lime-500/10 hover:text-lime-200"
+          >
+            <Link to={`/strain/${strain.slug || strain.id}`}>Details</Link>
+          </Button>
+
           <Button
             onClick={handleAddToCart}
-            disabled={isAdding}
-            className="flex-1 gold-button"
+            className="flex-1 bg-lime-400 text-black hover:bg-lime-300"
           >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            {isAdding ? t('common.loading') : t('strain.add.cart')}
-          </Button>
-          <Button 
-            variant="outline" 
-            className="border-yellow-600/30 text-yellow-400 hover:bg-yellow-400/10"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/strain/${strain.id}`);
-            }}
-          >
-            {t('strain.details')}
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Add to Cart
           </Button>
         </div>
       </CardContent>

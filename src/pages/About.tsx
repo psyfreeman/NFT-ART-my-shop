@@ -39,7 +39,7 @@ export default function About() {
             <div className="w-72 h-72 bg-white rounded-full p-6 mx-auto mb-8 shadow-lg">
               <img 
                 src="/assets/logo.png" 
-                alt="Strong and Powerful Genetics Logo" 
+                alt="Dima Sudarewskii" 
                 className="w-full h-full object-contain"
               />
             </div>

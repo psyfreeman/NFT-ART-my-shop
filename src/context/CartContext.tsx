@@ -1,18 +1,23 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export interface CartItem {
   id: string;
+  slug?: string;
   name: string;
-  price: number;
+  price: string | number;
   quantity: number;
   image: string;
-  type: string;
-  thc: string;
+  description: string;
+  featured?: boolean;
+  series?: string;
+  format?: string;
+  style?: string;
+  status?: string;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (item: Omit<CartItem, 'quantity'>) => Promise<void>;
+  addToCart: (item: Omit<CartItem, "quantity">) => Promise<void>;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -22,32 +27,37 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const parsePrice = (price: string | number): number => {
+  if (typeof price === "number") return price;
+  return Number(String(price).replace(/[^0-9.]/g, "")) || 0;
+};
+
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addToCart = async (newItem: Omit<CartItem, 'quantity'>) => {
+  const addToCart = async (newItem: Omit<CartItem, "quantity">) => {
     try {
-      setItems(prevItems => {
-        const existingItem = prevItems.find(item => item.id === newItem.id);
-        
+      setItems((prevItems) => {
+        const existingItem = prevItems.find((item) => item.id === newItem.id);
+
         if (existingItem) {
-          return prevItems.map(item =>
+          return prevItems.map((item) =>
             item.id === newItem.id
               ? { ...item, quantity: item.quantity + 1 }
               : item
           );
-        } else {
-          return [...prevItems, { ...newItem, quantity: 1 }];
         }
+
+        return [...prevItems, { ...newItem, quantity: 1 }];
       });
     } catch (error) {
-      console.error('Error adding item to cart:', error);
+      console.error("Error adding item to cart:", error);
       throw error;
     }
   };
 
   const removeFromCart = (id: string) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== id));
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -55,9 +65,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       removeFromCart(id);
       return;
     }
-    
-    setItems(prevItems =>
-      prevItems.map(item =>
+
+    setItems((prevItems) =>
+      prevItems.map((item) =>
         item.id === id ? { ...item, quantity } : item
       )
     );
@@ -68,7 +78,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const getTotalPrice = () => {
-    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return items.reduce((total, item) => {
+      return total + parsePrice(item.price) * item.quantity;
+    }, 0);
   };
 
   const getTotalItems = () => {
@@ -85,17 +97,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     getTotalItems,
   };
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
 export const useCart = () => {
   const context = useContext(CartContext);
+
   if (context === undefined) {
-    // Возвращаем значения по умолчанию вместо выброса ошибки
     return {
       items: [],
       addToCart: async () => {},
@@ -106,5 +114,6 @@ export const useCart = () => {
       getTotalItems: () => 0,
     };
   }
+
   return context;
 };

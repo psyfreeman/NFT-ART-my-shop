@@ -31,10 +31,10 @@ function Navigation() {
             <div className="flex min-h-[58px] items-center justify-between gap-3">
               <Link
                 to="/"
-                className="rounded-xl border border-lime-500/25 bg-[#33184d] px-4 py-3 hover:bg-[#3d1d5c]"
+                className="px-4 py-3"
               >
                 <div className="text-sm font-bold uppercase tracking-[0.22em] text-lime-400">
-                  Psyfreeman Φ
+                  Psyfreeman Φ 1.618
                 </div>
                 <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-violet-200/45">
                   collector art shop
@@ -69,7 +69,7 @@ function Navigation() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="rounded-xl border border-lime-500/35 bg-[#33184d] text-lime-300 hover:bg-[#3d1d5c]"
+                      className="rounded-xl border border-lime-500/35 bg-[#8c10ff] text-lime-300 hover:bg-[#3d1d5c]"
                     >
                       <Menu className="h-6 w-6" />
                     </Button>
@@ -88,7 +88,7 @@ function Navigation() {
                           className={`rounded-xl border px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] ${
                             isActive(item.href)
                               ? "border-lime-400 bg-lime-400 text-black"
-                              : "border-violet-300/15 bg-[#33184d] text-lime-300 hover:border-lime-500/45 hover:bg-[#3d1d5c]"
+                              : "border-violet-300/15 bg-[#8c10ff] text-lime-300 hover:border-lime-500/45 hover:bg-[#3d1d5c]"
                           }`}
                         >
                           {item.name}
@@ -96,12 +96,12 @@ function Navigation() {
                       ))}
 
                       <div className="mt-4 border-t border-violet-300/10 pt-4">
-                        <div className="mb-4 rounded-xl border border-violet-300/15 bg-[#33184d] p-2">
+                        <div className="mb-4 rounded-xl border border-violet-300/15 bg-[#8c10ff] p-2">
                           <LanguageSwitcher />
                         </div>
 
                         <Link to="/cart" onClick={() => setIsOpen(false)}>
-                          <button className="flex w-full items-center rounded-xl border border-lime-500/35 bg-[#33184d] px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-lime-300 hover:bg-[#3d1d5c]">
+                          <button className="flex w-full items-center rounded-xl border border-lime-500/35 bg-[#8c10ff] px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-lime-300 hover:bg-[#3d1d5c]">
                             <ShoppingCart className="mr-2 h-5 w-5" />
                             {t("nav.cart")}
                             {itemCount > 0 && (

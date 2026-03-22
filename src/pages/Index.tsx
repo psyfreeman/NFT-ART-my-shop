@@ -3,6 +3,7 @@ import { Crown, Shield, Award, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import Footer from "@/components/Footer";
 
 export default function Index() {
   const { t } = useLanguage();
@@ -118,6 +119,6 @@ export default function Index() {
           </div>
         </div>
       </div>
-    </div>
+    <Footer /></div>
   );
 }

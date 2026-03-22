@@ -21,7 +21,7 @@ function StrainDetail() {
 
   if (!strain) {
     return (
-      <div className="min-h-screen bg-[#09050d] text-white">
+      <div className="min-h-screen bg-[#09050d] pt-36 text-white">
         <Navigation />
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="text-center">
@@ -69,7 +69,7 @@ function StrainDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09050d] text-white">
+    <div className="min-h-screen bg-[#09050d] pt-36 text-white">
       <Navigation />
 
       <div className="mx-auto max-w-7xl px-4 py-8">

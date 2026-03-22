@@ -120,7 +120,7 @@ function Catalog() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09050d] text-white">
+      <div className="min-h-screen bg-[#09050d] pt-32 text-white">
       <Navigation />
 
       <section className="border-b border-lime-500/10 bg-gradient-to-b from-[#120916] to-[#09050d]">

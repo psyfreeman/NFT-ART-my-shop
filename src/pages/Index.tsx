@@ -1,124 +1,110 @@
-import { Button } from '@/components/ui/button';
-import { Crown, Shield, Award, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Navigation from '@/components/Navigation';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { Link } from "react-router-dom";
+import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { articles } from "@/lib/articles";
+import { useState } from "react";
 
-export default function Index() {
-  const { t } = useLanguage();
 
-  const features = [
-    {
-      icon: Crown,
-      title: t('home.features.genetics.title'),
-      description: t('home.features.genetics.desc')
-    },
-    {
-      icon: Shield,
-      title: t('home.features.quality.title'),
-      description: t('home.features.quality.desc')
-    },
-    {
-      icon: Award,
-      title: t('home.features.recognition.title'),
-      description: t('home.features.recognition.desc')
-    },
-    {
-      icon: Zap,
-      title: t('home.features.power.title'),
-      description: t('home.features.power.desc')
-    }
-  ];
 
+function Index() {
+  const [visibleCount, setVisibleCount] = useState(6);
+
+const enabledArticles = articles.filter((article) => article.enabled !== false);
+const visibleArticles = enabledArticles.slice(0, visibleCount);
+
+const handleShowMore = () => {
+  setVisibleCount((prev) => prev + 3);
+};
   return (
-    <div className="min-h-screen in-h-screen bg-gradient-to-br from-black via-gray-900 ">
-
+    <div className="min-h-screen bg-[#09050d] pt-36 text-white">
       <Navigation />
+
+      <main className="mx-auto max-w-6xl px-4 pb-16 md:px-6">
+        <section className="mb-10">
       
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/10 to-yellow-400/5"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <div className="w-72 h-72 bg-white rounded-full p-6 mx-auto mb-8 shadow-lg">
-              <img 
-                src="/assets/logo.png" 
-                alt="Dima Sudarewskii" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
-              <span className="text-white">{t('home.hero.title')}</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-              {t('home.hero.subtitle')}
-            </p>
-            <Link to="/catalog">
-              <Button size="lg" className="gold-button text-lg px-8 py-4 h-auto">
-                {t('home.hero.cta')}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
 
-      {/* Features Section */}
-      <div className="py-24 bg-gradient-to-b from-transparent to-gray-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="premium-card p-8 text-center group hover:scale-105 transition-all duration-300">
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 bg-yellow-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <feature.icon className="h-16 w-16 text-yellow-500 mx-auto relative z-10" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4 group-hover:text-yellow-400 transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-400 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+          <h1 className="max-w-4xl text-4xl font-bold uppercase tracking-[0.14em] text-white md:text-6xl">
+            Releases, notes, and archive entries
+          </h1>
 
-      {/* CTA Section */}
-      <div className="py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="premium-card p-12">
-            <div className="w-20 h-20 bg-white rounded-full p-2 mx-auto mb-8 shadow-lg">
-              <img 
-                src="/assets/logo.png" 
-                alt="Strong and Powerful Genetics Logo" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <h2 className="text-4xl font-bold mb-6">
-              <span className="text-white">{t('home.cta.title')}</span>
-              <br />
-              <span className="gold-text">{t('home.cta.subtitle')}</span>
-            </h2>
-            <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              {t('home.cta.desc')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/catalog">
-                <Button size="lg" className="gold-button">
-                  {t('home.cta.button')}
-                </Button>
-              </Link>
-              <Link to="/about">
-                <Button size="lg" variant="outline" className="border-yellow-600/30 text-yellow-400 hover:bg-yellow-400/10">
-                  {t('nav.about')}
-                </Button>
-              </Link>
-            </div>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-gray-400 md:text-base">
+            A living front page for drops, articles, collector notes, and future exhibition signals.
+          </p>
+        </section>
+
+        <section>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {visibleArticles.map((article) => {
+              const sizeClass =
+                article.size === "large"
+                  ? "xl:col-span-2"
+                  : article.size === "medium"
+                  ? "xl:col-span-1"
+                  : "xl:col-span-1";
+
+              const imageHeight =
+                article.size === "large"
+                  ? "h-80"
+                  : article.size === "medium"
+                  ? "h-64"
+                  : "h-56";
+
+              return (
+                <article
+                  key={article.id}
+                  className={`rounded-2xl border border-lime-500/10 bg-[#120916] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)] ${sizeClass}`}
+                >
+                  <div className="overflow-hidden rounded-xl">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className={`w-full object-cover ${imageHeight}`}
+                    />
+                  </div>
+
+                  <div className="p-3 md:p-4">
+                    <div className="mb-3 text-xs uppercase tracking-[0.16em] text-gray-500">
+                      {article.date}
+                    </div>
+
+                    <h2 className="text-2xl font-bold leading-tight text-white">
+                      {article.title}
+                    </h2>
+
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-400">
+                      {article.excerpt}
+                    </p>
+
+                    <div className="mt-5">
+                      <Link
+                        to={`/article/${article.slug}`}
+                        className="inline-flex rounded-lg border border-violet-400/20 bg-[#2a173d] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-violet-200 transition-colors hover:border-lime-400/40 hover:bg-lime-400 hover:text-black"
+                      >
+                        Read more
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-        </div>
-      </div>
-    <Footer /></div>
+
+          {visibleCount < enabledArticles.length && (
+  <div className="mt-10 flex justify-center">
+    <button
+      onClick={handleShowMore}
+      className="rounded-xl border border-violet-400/20 bg-[#2a173d] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-violet-200 transition-colors hover:border-lime-400/40 hover:bg-lime-400 hover:text-black"
+    >
+      Show More News
+    </button>
+  </div>
+)}
+        </section>
+      </main>
+
+      <Footer />
+    </div>
   );
 }
+
+export default Index;

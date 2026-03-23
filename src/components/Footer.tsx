@@ -1,6 +1,7 @@
 import React from "react";
 import { FaInstagram, FaTelegramPlane } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import { AiFillTwitterSquare } from "react-icons/ai";
 
 function Footer() {
   return (
@@ -29,7 +30,7 @@ function Footer() {
               rel="noreferrer"
               className="flex items-center gap-3 hover:text-lime-300"
             >
-              <div className="h-4 w-4 text-lime-400" />
+              <AiFillTwitterSquare className="h-4 w-4 text-lime-400" />
               <span>@psyfreeman</span>
             </a>
 
@@ -86,7 +87,7 @@ function Footer() {
 
       <div className="border-t border-lime-500/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4 text-xs text-gray-500 md:flex-row md:items-center md:justify-between md:px-6">
-          <span>© 2026 Psyfreeman Φ</span>
+          <span>© 2026 Psyfreeman Φ 1.618</span>
           <span>Support the art · Crypto / Visa / Mastercard</span>
         </div>
       </div>

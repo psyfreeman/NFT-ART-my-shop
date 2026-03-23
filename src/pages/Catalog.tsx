@@ -6,6 +6,7 @@ import { strains } from "@/lib/mockData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -319,7 +320,7 @@ function Catalog() {
           </main>
         </div>
       </div>
-    </div>
+    <Footer /></div>
   );
 }
 

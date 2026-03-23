@@ -15,6 +15,7 @@ import Checkout from './pages/Checkout';
 import Chat from './pages/Chat';
 import StrainDetail from './pages/StrainDetail';
 import NotFound from './pages/NotFound';
+import ArticleDetail from "@/pages/ArticleDetail";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => {
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/strain/:id" element={<StrainDetail />} />
                   <Route path="*" element={<NotFound />} />
+                  <Route path="/article/:slug" element={<ArticleDetail />} />
                 </Routes>
               </BrowserRouter>
             )}

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingBag, Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import Footer from "@/components/Footer";
 
 function Cart() {
   const { items = [], updateQuantity, removeFromCart, clearCart, getTotalPrice } = useCart();
@@ -69,7 +70,7 @@ function Cart() {
                     
                     <div className="flex-1">
                       <h3 className="text-lg font-bold text-white mb-1">{item.name}</h3>
-                      <p className="text-gray-400 text-sm mb-2">{item.type} • {item.thc} THC</p>
+                    
                       <p className="text-yellow-400 font-bold">${item.price}</p>
                       <p>12 seeds</p>
                     </div>
@@ -164,7 +165,7 @@ function Cart() {
           </div>
         </div>
       </div>
-    </div>
+    <Footer /></div>
   );
 }
 
